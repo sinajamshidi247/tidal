@@ -3,7 +3,7 @@ import "../assests/css/seach.css";
 import {Autocomplete, TextField} from "@mui/material";
 import {authRouteApiCallV2,sleep} from "../components/general/Helper";
 import AlbumList from "../components/AlbumList";
-import SelectonCardLoader from "./general/SelectonCardLoader";
+import CircularProgress from '@mui/material/CircularProgress';
 
 
 
@@ -14,6 +14,7 @@ const Search = () =>{
     const [dataWithTimeDelay,setDataWithTimeDelay] = useState<string>("")
     const [albume,setAlbum] =  useState<string []|null>(null)
     const [loader,setLoader] = useState<boolean>(false)
+    const [cardLoader,setCardLoadder] = useState<boolean>(false)
 
     const searchRequest = (value:string) =>{
         if (value.length !==0){
@@ -38,24 +39,17 @@ const Search = () =>{
     };
 
     const searchAlbums = (artist_name:string) =>{
-        // setLoader(true)
+        setCardLoadder(true)
         authRouteApiCallV2(
             (response) => {
-                // let data_list:any = []
-                // response.data["data"].forEach((item:any)=>{
-                //     data_list.push(item["name"])
-                // })
-                // setArtist(data_list)
-
-                console.log("-----------------------------------")
-                console.log(response.data["data"])
                 setAlbum(response.data["data"])
-                console.log("-----------------------------------")
+                setCardLoadder(false)
             },
             `/search/album?q=${artist_name}&limit=10`
 
         ).catch((error) => {
             console.log(error);
+            setCardLoadder(false)
         });
     }
 
@@ -109,7 +103,6 @@ const Search = () =>{
                         onChange={(event, value) => {
                             console.log(value)
                             searchAlbums(value)
-                            // setSelectedArtist(value)
                         }
 
                     }
@@ -135,14 +128,19 @@ const Search = () =>{
                     />
                 </div>
                 <div className="mt-2">
-                    { albume &&
+                    {!albume && cardLoader &&
+                        <div className="h-screen flex items-center justify-center">
+                            <CircularProgress/>
+                        </div>
+                    }
+                    {albume &&
                         <div className={" grid md:grid-cols-5 gap-4 grid-cols-2"}>
                             {
                                 albume.map((item:any)=>{
                                     return(
                                         <>
                                             <AlbumList cover_medium={item.cover_medium
-                                            } link={item.link} id={item.id} title={item.title}/>
+                                            } link={item.link} id={item.id} title={item.title} card_loader = {cardLoader}/>
 
                                         </>
 
