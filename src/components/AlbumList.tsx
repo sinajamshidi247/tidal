@@ -13,23 +13,15 @@ interface AlbumInfo {
     link:string,
     id:number,
     title:string,
+    card_loader:boolean
 }
 
-// const useStyles = makeStyles(theme:any => ({
-//     root: {
-//         maxWidth: 345,
-//         [theme.breakpoints.down("md")] : {
-//             maxWidth: 200
-//         }
-//     },
-//     media: {
-//         height: 140
-//     }
-// }));
+
+
 
 
 const AlbumList = (props:AlbumInfo) =>{
-    if(!props ){
+    if(props.card_loader){
         return(
             <SelectonCardLoader/>
             )
@@ -41,7 +33,7 @@ const AlbumList = (props:AlbumInfo) =>{
                         component="img"
                         // onLoad={}
                         image={props.cover_medium}
-                        alt="green iguana"
+                        alt={props.title}
                     />
                     <CardContent>
                         <Typography gutterBottom variant="h6" component="div">
@@ -52,7 +44,6 @@ const AlbumList = (props:AlbumInfo) =>{
             </Card>
         )
     }
-    // const classes = useStyles();
 };
 
 export default AlbumList;
