@@ -8,7 +8,7 @@ function sleep(ms: number) {
     return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-const authRouteApiCallV2 = async (target: (arg: any) => any, url: string, method: Method = "get", data: any = null) => {
+const authRouteApiCallV2 = async (target: (arg: any) => any, url: string|null, method: Method = "get", data: any = null) => {
     let config: {
         url: string;
         method: Method;

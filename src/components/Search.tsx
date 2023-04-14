@@ -2,10 +2,15 @@ import React, {useEffect, useState} from "react";
 import "../assests/css/seach.css";
 import {Autocomplete, TextField} from "@mui/material";
 import {authRouteApiCallV2,sleep} from "../components/general/Helper";
-import AlbumList from "../components/AlbumList";
+// import AlbumList from "../components/AlbumList";
 import CircularProgress from '@mui/material/CircularProgress';
+import { lazy, Suspense } from 'react'
+import InfiniteScroll from "react-infinite-scroller";
 
 
+
+
+const AlbumList = lazy(() => import("../components/AlbumList"))
 
 
 const Search = () =>{
@@ -15,6 +20,8 @@ const Search = () =>{
     const [albume,setAlbum] =  useState<string []|null>(null)
     const [loader,setLoader] = useState<boolean>(false)
     const [cardLoader,setCardLoadder] = useState<boolean>(false)
+    const [nextPage,setNextPage] = useState<string|undefined>(undefined)
+    const [hasMore,setHasMore] = useState<boolean>(true)
 
     const searchRequest = (value:string) =>{
         if (value.length !==0){
@@ -43,6 +50,10 @@ const Search = () =>{
         authRouteApiCallV2(
             (response) => {
                 setAlbum(response.data["data"])
+                console.log("----------------------")
+                console.log(response.data["next"])
+                setNextPage(response.data["next"])
+                console.log("----------------------")
                 setCardLoadder(false)
             },
             `/search/album?q=${artist_name}&limit=10`
@@ -50,6 +61,21 @@ const Search = () =>{
         ).catch((error) => {
             console.log(error);
             setCardLoadder(false)
+        });
+    }
+
+
+    const loadMoreAlbums = () =>{
+        authRouteApiCallV2(
+            (response) => {
+                setNextPage(response.data["next"])
+                setAlbum( [...albume??[], ...response.data["data"]]);
+            },
+
+             nextPage !== undefined ? nextPage.replace("https://api.deezer.com/",""):""
+
+        ).catch((error) => {
+            console.log(error);
         });
     }
 
@@ -89,6 +115,14 @@ const Search = () =>{
             setLoader(false)
         }
     }, [artist]);
+
+    useEffect(()=>{
+        if(nextPage !== undefined){
+            setHasMore(true)
+        }else{
+            setHasMore(false)
+        }
+    },[albume,nextPage])
 
     return(
         <>
@@ -134,6 +168,13 @@ const Search = () =>{
                         </div>
                     }
                     {albume &&
+                        <Suspense>
+                            <InfiniteScroll
+                                pageStart={0}
+                                loadMore={loadMoreAlbums}
+                                hasMore={hasMore}
+                                loader={<div className="loader" key={0}>Loading ...</div>}
+                            >
                         <div className={" grid md:grid-cols-5 gap-4 grid-cols-2"}>
                             {
                                 albume.map((item:any)=>{
@@ -148,6 +189,8 @@ const Search = () =>{
                                 })
                             }
                         </div>
+                            </InfiniteScroll>
+                        </Suspense>
                     }
                 </div>
 
