@@ -18,9 +18,7 @@ const Search = () =>{
     const {pageChanger,searchChanger} = bindActionCreators(actionCreators, dispatch)
     const [artist,setArtist] = useState<string []>([])
     const [dataWithTimeDelay,setDataWithTimeDelay] = useState<string>("")
-    const [albume,setAlbum] =  useState<string []|null>(null)
     const [loader,setLoader] = useState<boolean>(false)
-    const [nextPage,setNextPage] = useState<string|undefined>(undefined)
 
     const searchRequest = (value:string) =>{
         if (value.length !==0){
