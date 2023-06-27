@@ -1,9 +1,11 @@
 import React from 'react';
-import Search from "./components/Search";
+import Land from "./components/Land";
+
+
 function App() {
   return (
   <>
-    <Search/>
+    <Land/>
   </>
   );
 }
